@@ -26,6 +26,27 @@ def read_category_for_action(action_idd: str) -> str:
     result = db.session.query(Actions.category_idd).filter(Actions.idd == action_idd).scalar()
     return result
 
+def add_action(category_idd:str, action_idd:str, created_date:str):
+    new_action = Actions_events(category_idd=category_idd, action_idd=action_idd, date_time=created_date)
+
+    db.session.add(new_action)
+    db.session.commit()
+
+def get_events_idd(category_idd:str, action_idd:str, created_date:str) -> None:
+    result:str = db.session.query(Actions_events.idd).filter(db.and_(
+        Actions_events.category_idd==category_idd,
+        Actions_events.action_idd == action_idd,
+        Actions_events.date_time == created_date,
+        )).scalar()
+    return result
+
+def delete_action(event_idd: str) -> None:
+    db.session.query(Actions_events).filter(Actions_events.idd == event_idd).delete()
+    db.session.commit()
+    return{
+        'status': 'success'
+    }
+
 
 # Path for our main Svelte page
 @views.route("/")
@@ -36,25 +57,6 @@ def base():
 @views.route("/<path:path>")
 def home(path):
     return send_from_directory('../frontend/public', path)
-
-
-@views.route('/action_post', methods=['POST'])
-def post_action_into_db() -> dict:
-    action_idd:str = request.args['action_idd']
-    today: str = datetime.today().strftime('%Y-%m-%d')
-
-    actions_events_existed: bool  = check_actions_events_exist(action_idd, today)
-
-    if actions_events_existed:
-        return {'posted_id': action_idd,'actions_events_existed' : actions_events_existed, 'posted': False}
-
-    category_idd: str = read_category_for_action(action_idd)
-    created_date: str = datetime.now().strftime('%Y-%m-%d %H:%M')
-    new_action = Actions_events(category_idd=category_idd, action_idd=action_idd, date_time=created_date)
-
-    db.session.add(new_action)
-    db.session.commit()
-    return {'posted_id': action_idd, 'existed': actions_events_existed, 'posted': True}
 
 @views.route('/actions_list', methods=['GET'])
 def get_actions_list():
@@ -79,3 +81,29 @@ def get_actions_list():
 
         result.append(category_object)
     return result
+
+
+@views.route('/event-post', methods=['GET', 'POST'])
+def post_action_into_db() -> dict:
+    action_idd:str = request.args['action-idd']
+    today: str = datetime.today().strftime('%Y-%m-%d')
+
+    actions_events_existed: bool  = check_actions_events_exist(action_idd, today)
+
+    if actions_events_existed:
+        return {'posted_id': action_idd,'actions_events_existed' : actions_events_existed, 'posted': False}
+    
+    else:
+        category_idd: str = read_category_for_action(action_idd)
+        created_date: str = datetime.now().strftime('%Y-%m-%d %H:%M')
+        
+        add_action(category_idd, action_idd, created_date)
+        events_idd:int = get_events_idd(category_idd, action_idd, created_date)
+        return {'posted_id': action_idd, 'existed': actions_events_existed, 'posted': True, 'events_idd': events_idd}
+
+
+@views.route('/event-delete', methods=['POST'])
+def delete_route() -> dict:
+    event_idd:int = int(request.args['event-idd'])
+    delete_action(event_idd)  
+    return {'event_idd': event_idd, 'status': 'removed'}    
