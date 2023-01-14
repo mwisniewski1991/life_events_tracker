@@ -1,7 +1,7 @@
 from flask import Blueprint, send_from_directory, request
 from datetime import datetime
 from . import db
-from .models import Categories, Actions, Actions_events
+from .models import Categories, Actions, Events
 
 views = Blueprint('views', __name__)
 
@@ -12,7 +12,7 @@ def check_actions_events_exist(action_idd: str, date: str) -> bool:
     action_idd: example 'office'
     date: format yyyy-mm-dd, checking db for higher values
     '''
-    result = db.session.query(Actions_events.idd).filter(db.and_(Actions_events.action_idd == action_idd, Actions_events.date_time >= date))
+    result = db.session.query(Events.idd).filter(db.and_(Events.action_idd == action_idd, Events.created_datetime >= date))
     for row in result:
         if row:
             return True
@@ -27,21 +27,21 @@ def read_category_for_action(action_idd: str) -> str:
     return result
 
 def add_action(category_idd:str, action_idd:str, created_date:str):
-    new_action = Actions_events(category_idd=category_idd, action_idd=action_idd, date_time=created_date)
+    new_action = Events(category_idd=category_idd, action_idd=action_idd, created_datetime=created_date)
 
     db.session.add(new_action)
     db.session.commit()
 
 def get_events_idd(category_idd:str, action_idd:str, created_date:str) -> None:
-    result:str = db.session.query(Actions_events.idd).filter(db.and_(
-        Actions_events.category_idd==category_idd,
-        Actions_events.action_idd == action_idd,
-        Actions_events.date_time == created_date,
+    result:str = db.session.query(Events.idd).filter(db.and_(
+        Events.category_idd==category_idd,
+        Events.action_idd == action_idd,
+        Events.created_datetime == created_date,
         )).scalar()
     return result
 
 def delete_action(event_idd: str) -> None:
-    db.session.query(Actions_events).filter(Actions_events.idd == event_idd).delete()
+    db.session.query(Events).filter(Events.idd == event_idd).delete()
     db.session.commit()
     return{
         'status': 'success'
