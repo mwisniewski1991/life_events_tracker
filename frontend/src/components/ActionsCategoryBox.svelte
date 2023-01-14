@@ -6,21 +6,18 @@
 
 </script>
 
-<div class="container m-3 actionsCategoryBox">
-
+<div class="container actionsCategoryBox">
     <div class='row'>
         <h3 class='display-5'>{category_name}</h3>
     </div>
-
     <div class=row>
         {#each actions_list as {action_idd, action_name}}
             <ActionBox 
-                action_id={action_idd} 
+                action_idd={action_idd} 
                 action_name={action_name} 
             />
         {/each}
     </div>
-
 </div>
 
 
@@ -30,7 +27,9 @@
         /* font-size: 1em; */
     } 
     .actionsCategoryBox{
+        width: 100%;
         border-bottom: .5px dashed white;
+
     }
 
 </style>

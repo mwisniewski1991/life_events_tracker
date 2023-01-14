@@ -17,8 +17,7 @@
 	main {
 		background-color: #0c0c0d;
 		text-align: left;
-		padding: 1em;
-		max-width: 240px;
+		/* max-width: 240px; */
 		margin: 0 auto;
 	}
 
