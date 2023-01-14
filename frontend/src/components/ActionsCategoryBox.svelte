@@ -11,10 +11,11 @@
         <h3 class='display-5'>{category_name}</h3>
     </div>
     <div class=row>
-        {#each actions_list as {action_idd, action_name}}
+        {#each actions_list as {action_idd, action_name, posted_today}}
             <ActionBox 
                 action_idd={action_idd} 
                 action_name={action_name} 
+                posted_today={posted_today}
             />
         {/each}
     </div>

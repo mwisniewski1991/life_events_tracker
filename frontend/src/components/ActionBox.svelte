@@ -1,9 +1,20 @@
 <script>
     export let action_name;
     export let action_idd;
+    export let posted_today;
     let action_status = ''
     let remove_button_disabled = true;
     let last_event_idd = null;
+
+
+    function check_posting(posted_today){
+        if (posted_today){
+            action_status = 'POSTED TODAY';
+        }else{
+            action_status = ''
+        }
+    }
+    check_posting(posted_today);
 
     async function post_event(action_idd){
 
@@ -47,10 +58,15 @@
     <div class="card-body">
         <div class="card-button-container">
                 <h5 class="card-title">{action_name} </h5>
-
+                
                 <span class='card-status'>Status: {action_status}</span>
 
-                <button type="button" class="btn btn-outline-success" on:click={post_event(action_idd)}>Add action</button>
+                {#if posted_today}
+                    <button type="button" class="btn btn-outline-secondary" disabled>Add action</button>
+                {:else}
+                    <button type="button" class="btn btn-outline-success" on:click={post_event(action_idd)}>Add action</button>
+                {/if}
+
 
                 {#if remove_button_disabled }
                     <button type="button" class="btn btn-outline-secondary btn-remove" disabled> Remove last event</button>
