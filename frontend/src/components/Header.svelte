@@ -2,7 +2,7 @@
 
 </script>
 
-<h1 class="display-1">Life Tracker</h1>
+<h1 class="display-1">Events Tracker</h1>
 
 <style> 
   .display-1{
