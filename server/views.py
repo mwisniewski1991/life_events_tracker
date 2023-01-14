@@ -62,6 +62,7 @@ def home(path):
 def get_actions_list():
     
     result: list[dict] = []
+    today: str = datetime.today().strftime('%Y-%m-%d')
 
     categories_result = db.session.query(Categories).all()
     for category in categories_result:
@@ -73,9 +74,12 @@ def get_actions_list():
 
         actions_result = db.session.query(Actions).filter(Actions.category_idd == category.idd)
         for action in actions_result:
+            event_posted_today = bool(db.session.query(Events.idd).filter(db.and_(Events.action_idd == action.idd, Events.created_datetime >= today)).scalar())
+            
             actions_object = {}
             actions_object['action_idd'] = action.idd
             actions_object['action_name'] = action.name
+            actions_object['posted_today'] = event_posted_today
 
             category_object['actions_list'].append(actions_object)
 
@@ -83,7 +87,7 @@ def get_actions_list():
     return result
 
 
-@views.route('/event-post', methods=['GET', 'POST'])
+@views.route('/event-post', methods=['POST'])
 def post_action_into_db() -> dict:
     action_idd:str = request.args['action-idd']
     today: str = datetime.today().strftime('%Y-%m-%d')
