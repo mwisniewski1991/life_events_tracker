@@ -1,4 +1,5 @@
 <script>
+    import { year, month, day } from "./store.js"
     export let action_name;
     export let action_idd;
     export let posted_today;

@@ -1,7 +1,9 @@
 <script>
+    import ActionBox from "./ActionBox.svelte";
+    import { year, month, day } from "./store.js"
+    
     export let category_name;
     export let actions_list;
-    import ActionBox from "./ActionBox.svelte";
 
 
 </script>
